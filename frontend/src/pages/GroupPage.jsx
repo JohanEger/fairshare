@@ -36,7 +36,7 @@ function GroupPage() {
     if (notFound) {
         return (
             <div className="page">
-                <div className="group-card">
+                <div className="card">
                     <h1>Group not found</h1>
                     <p className="empty">This group does not exist, or you are not a member of it.</p>
                     <Link to="/groups">Back to your groups</Link>
@@ -48,7 +48,7 @@ function GroupPage() {
     if (error) {
         return (
             <div className="page">
-                <div className="group-card">
+                <div className="card">
                     <span className="error">{error}</span>
                     <Link to="/groups">Back to your groups</Link>
                 </div>
@@ -58,7 +58,7 @@ function GroupPage() {
 
     return (
         <div className="page">
-            <div className="group-card">
+            <div className="card">
                 <h1>{group.name}</h1>
                 {group.description && <p className="subtitle">{group.description}</p>}
 

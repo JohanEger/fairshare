@@ -28,7 +28,7 @@ function GroupsOverview() {
 
     return (
         <div className="page">
-            <div className="groups-card">
+            <div className="card">
                 <h1>Your Groups</h1>
 
                 {error && <span className="error">{error}</span>}

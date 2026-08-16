@@ -61,4 +61,16 @@ describe('CreateGroup', () => {
         expect(await screen.findByText(/at most 50 characters/i)).toBeInTheDocument();
         expect(mockNavigate).not.toHaveBeenCalled();
     });
+
+    it('shows an inline error when the description is too long', async () => {
+        createGroup.mockResolvedValue({
+            errors: { description: 'Description must be at most 255 characters' }
+        });
+
+        renderPage();
+        await userEvent.type(screen.getByLabelText(/group name/i), 'Flat 3');
+        await userEvent.click(screen.getByRole('button', { name: /create group/i }));
+
+        expect(await screen.findByText(/at most 255 characters/i)).toBeInTheDocument();
+    });
 });

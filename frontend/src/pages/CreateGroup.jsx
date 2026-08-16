@@ -33,7 +33,7 @@ function CreateGroup() {
 
     return (
         <div className="page">
-            <div className="profile-card">
+            <div className="card">
                 <h1>Create a Group</h1>
                 <p className="subtitle">Name your flat, trip or event</p>
 
@@ -59,6 +59,7 @@ function CreateGroup() {
                             placeholder="What is this group for?"
                             onChange={(event) => setDescription(event.target.value)}
                         />
+                        {errors.description && <span className="error">{errors.description}</span>}
                     </div>
 
                     {errors.form && <span className="error">{errors.form}</span>}
