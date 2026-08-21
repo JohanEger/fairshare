@@ -34,7 +34,6 @@ function UserManagement() {
         setCountry(user.country || '');
         setCurrency(user.currency || '');
       } catch (loadError) {
-        console.error('Failed to load profile', loadError);
         setError('Could not load your profile. Please try again.');
       } finally {
         setLoading(false);
@@ -79,7 +78,6 @@ function UserManagement() {
       setPassword('');
       setMessage('Your profile has been updated.');
     } catch (submitError) {
-      console.error('Failed to update profile', submitError);
       setError(submitError.message || 'Unable to update profile.');
     }
   }
@@ -88,7 +86,7 @@ function UserManagement() {
     try {
       await logout();
     } catch (logoutError) {
-      console.error('Logout request failed', logoutError);
+      // The session may already be gone; navigate away regardless.
     }
     navigate('/login');
   }
