@@ -63,6 +63,11 @@ const router = createBrowserRouter([
                 path: '/groups/:id/members',
                 element: <GroupMembers/>,
                 loader: requireAuth
+            },
+            {
+                path: '/groups/:id/expenses/new',
+                element: <AddExpense/>,
+                loader: requireAuth
             }
         ]
     }
