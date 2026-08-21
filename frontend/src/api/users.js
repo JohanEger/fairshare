@@ -1,6 +1,8 @@
-import { API_BASE } from './config';
+import { API_BASE, apiFetch } from './config';
 
 export async function getCurrentUser() {
+    // Deliberately not using apiFetch: a 403 here means "not logged in", which is a
+    // normal answer, not a reason to redirect. Landing depends on this returning null.
     const response = await fetch(`${API_BASE}/users/me`, {
         credentials: 'include'
     });
@@ -15,10 +17,9 @@ export async function getCurrentUser() {
 }
 
 export async function updateCurrentUser(payload) {
-    const response = await fetch(`${API_BASE}/users/me`, {
+    const response = await apiFetch('/users/me', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(payload)
     });
     if (!response.ok) {
@@ -29,8 +30,5 @@ export async function updateCurrentUser(payload) {
 }
 
 export async function logout() {
-    await fetch(`${API_BASE}/users/logout`, {
-        method: 'POST',
-        credentials: 'include'
-    });
+    await apiFetch('/users/logout', {method: 'POST'});
 }

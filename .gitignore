@@ -13,8 +13,6 @@ npm-debug.log*
 .env
 .env.*
 cookies.txt
-*cookies.txt
-c.txt
 
 # IDEs
 .idea/

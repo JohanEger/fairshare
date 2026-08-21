@@ -62,6 +62,11 @@ public class UserController {
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
+      // Rotate the session id on authentication to prevent session fixation.
+      if (httpRequest.getSession(false) != null) {
+        httpRequest.changeSessionId();
+      }
+
       SecurityContext context = SecurityContextHolder.createEmptyContext();
       context.setAuthentication(authentication);
       SecurityContextHolder.setContext(context);
