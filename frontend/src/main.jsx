@@ -7,6 +7,7 @@ import CreateGroup from './pages/CreateGroup.jsx';
 import GroupPage from './pages/GroupPage.jsx';
 import Landing from './pages/Landing.jsx';
 import GroupMembers from './pages/GroupMembers.jsx';
+import AddExpense from './pages/AddExpense.jsx';
 import Login from './pages/Login.jsx';
 import UserManagement from './pages/UserManagement.jsx';
 import './index.css';
