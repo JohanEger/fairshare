@@ -7,7 +7,7 @@ export const API_BASE = 'http://localhost:8080';
 export async function apiFetch(path, options = {}){
     const response =await fetch(`${API_BASE}${path}`, { credentials: 'include', ...options });
 
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
         window.location.assign('/login');
         throw new Error('Not authenticated');
     }

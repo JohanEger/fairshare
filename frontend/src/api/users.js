@@ -6,7 +6,7 @@ export async function getCurrentUser() {
     const response = await fetch(`${API_BASE}/users/me`, {
         credentials: 'include'
     });
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
         return null;                       // not logged in
     }
     if (!response.ok) {

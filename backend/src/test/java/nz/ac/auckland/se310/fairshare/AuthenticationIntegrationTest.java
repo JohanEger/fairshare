@@ -2,6 +2,7 @@ package nz.ac.auckland.se310.fairshare;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,18 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 @SpringBootTest
 class AuthenticationIntegrationTest {
 
-    @Container @ServiceConnection
+    @Container
+    @ServiceConnection
     static final MySQLContainer MYSQL = new MySQLContainer(DockerImageName.parse("mysql:8.4"));
 
     private static final String ALICE_EMAIL = "alice.auth@test.com";
     private static final String BOB_EMAIL = "bob.auth@test.com";
     private static final String PASSWORD = "password123";
 
-    @Autowired WebApplicationContext context;
-    @Autowired UserRepository userRepository;
+    @Autowired
+    WebApplicationContext context;
+    @Autowired
+    UserRepository userRepository;
 
     private MockMvcTester mvc;
 
@@ -49,13 +53,15 @@ class AuthenticationIntegrationTest {
         mvc.post().uri("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-            {"username":"%s","password":"%s","email":"%s",
-             "country":"NEW_ZEALAND","currency":"NZD"}
-            """.formatted(username, PASSWORD, email))
+                        {"username":"%s","password":"%s","email":"%s",
+                         "country":"NEW_ZEALAND","currency":"NZD"}
+                        """.formatted(username, PASSWORD, email))
                 .exchange();
     }
 
-    /** Logs in and returns the session the server established. */
+    /**
+     * Logs in and returns the session the server established.
+     */
     private MockHttpSession login(String email) {
         var result = mvc.post().uri("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,9 +73,9 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    void unauthenticatedRequestsAreRejected() {
-        assertThat(mvc.get().uri("/users/me")).hasStatus(HttpStatus.FORBIDDEN);
-        assertThat(mvc.get().uri("/groups")).hasStatus(HttpStatus.FORBIDDEN);
+    void unauthenticatedRequestsReturnUnauthorized() {
+        assertThat(mvc.get().uri("/users/me")).hasStatus(HttpStatus.UNAUTHORIZED);
+        assertThat(mvc.get().uri("/groups")).hasStatus(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -96,6 +102,27 @@ class AuthenticationIntegrationTest {
                 .hasStatus(HttpStatus.NO_CONTENT);
 
         assertThat(mvc.get().uri("/users/me").session(session))
+                .hasStatus(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void authenticatedUserWithoutPermissionGetsForbiddenNotUnauthorized() throws Exception {
+        MockHttpSession aliceSession = login(ALICE_EMAIL);
+
+        // Alice creates a group; Bob is not a member of it.
+        var created = mvc.post().uri("/groups")
+                .session(aliceSession)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Alice's flat\"}")
+                .exchange();
+
+        assertThat(created).hasStatus(HttpStatus.CREATED);
+
+        Number groupId = JsonPath.read(created.getResponse().getContentAsString(), "$.id");
+
+        MockHttpSession bobSession = login(BOB_EMAIL);
+
+        assertThat(mvc.get().uri("/groups/" + groupId + "/members").session(bobSession))
                 .hasStatus(HttpStatus.FORBIDDEN);
     }
 }
